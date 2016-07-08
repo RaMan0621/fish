@@ -1,22 +1,39 @@
-import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
+Template.leaderboard.events({
+'click .players': function(){
+var playerId = this._id;
 
-import './main.html';
+ Session.set('selectedPlayer',playerId );
+var selectedPlayer = Session.get('selectedPlayer');
+console.log(selectedPlayer);
 
-Template.hello.onCreated(function helloOnCreated() {
-  // counter starts at 0
-  this.counter = new ReactiveVar(0);
+ 
+    
+    console.log("You clicked a .player element");
+
+},
+'click .increment': function(){
+    var selectedPlayer = Session.get('selectedPlayer');
+   List.update({_id: selectedPlayer }, {$inc :{score: 5} } );
+  
+},
+'click .decrement': function(){
+    var selectedPlayer = Session.get('selectedPlayer');
+    List.update({ _id: selectedPlayer }, {$inc: {score: -5} });
+},
+'click .remove': function(){
+    var selectedPlayer = Session.get('selectedPlayer');
+    List.remove({ _id: selectedPlayer });
+}
+
+
 });
-
-Template.hello.helpers({
-  counter() {
-    return Template.instance().counter.get();
-  },
-});
-
-Template.hello.events({
-  'click button'(event, instance) {
-    // increment the counter when button is clicked
-    instance.counter.set(instance.counter.get() + 1);
-  },
+Template.form.events({
+'submit form': function(event){
+    event.preventDefault();
+    var playerNameVar = event.target.playerName.value;
+    List.insert({
+        name: playerNameVar,
+        score: 0
+    });
+}
 });
